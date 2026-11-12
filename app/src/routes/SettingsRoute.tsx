@@ -227,7 +227,7 @@ function ProxySection({ s }: { s: Settings }) {
     <Section id="proxy" title="Downloads">
       <Row
         label="Download proxy"
-        hint="Lets pasted links and Gutenberg books download. See the README to deploy yours."
+        hint="Fetches pasted links and search downloads. Built in on Netlify (/api); change it only if you run the Cloudflare worker."
         htmlFor={urlId}
       >
         <input
