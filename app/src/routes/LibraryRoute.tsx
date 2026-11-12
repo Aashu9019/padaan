@@ -80,7 +80,9 @@ function BookTile({ book, page, onMenu }: { book: Book; page?: number; onMenu: (
       </Link>
       <div className="mt-2.5 flex items-start gap-1">
         <div className="min-w-0 flex-1">
-          <p className="line-clamp-2 font-serif text-[0.95rem] leading-snug text-ink">{book.title}</p>
+          <p className="line-clamp-2 font-serif text-[0.95rem] leading-snug text-ink">
+            {book.title}
+          </p>
           {book.author && <p className="mt-0.5 truncate text-xs text-ink-3">{book.author}</p>}
         </div>
         <button
@@ -209,7 +211,10 @@ export default function LibraryRoute() {
         <>
           {continueReading.length > 0 && !query && (
             <section className="pt-6" aria-labelledby="continue-heading">
-              <h2 id="continue-heading" className="text-xs font-semibold tracking-[0.14em] text-ink-3 uppercase">
+              <h2
+                id="continue-heading"
+                className="text-xs font-semibold tracking-[0.14em] text-ink-3 uppercase"
+              >
                 Continue reading
               </h2>
               <div className="-mx-4 mt-3 flex snap-x gap-3 overflow-x-auto px-4 pb-2 sm:mx-0 sm:px-0 [scrollbar-width:none]">

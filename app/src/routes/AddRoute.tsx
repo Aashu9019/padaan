@@ -15,7 +15,9 @@ function ImportPanel() {
         onClick={pick}
         className={clsx(
           'flex w-full flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed px-6 py-12 text-center transition-colors',
-          dragging ? 'border-accent bg-accent/5' : 'border-line hover:border-ink-3 hover:bg-paper-2/40',
+          dragging
+            ? 'border-accent bg-accent/5'
+            : 'border-line hover:border-ink-3 hover:bg-paper-2/40',
         )}
       >
         <span className="grid size-12 place-items-center rounded-full bg-paper-2 text-ink-2">

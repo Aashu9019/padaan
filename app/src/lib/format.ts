@@ -20,7 +20,11 @@ export function formatRelative(timestamp: number, now = Date.now()): string {
   if (abs < 3600) return rtf.format(Math.round(seconds / 60), 'minute');
   if (abs < 86400) return rtf.format(Math.round(seconds / 3600), 'hour');
   if (abs < 86400 * 30) return rtf.format(Math.round(seconds / 86400), 'day');
-  return new Date(timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+  return new Date(timestamp).toLocaleDateString(undefined, {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
 }
 
 /** 0-based page → percentage read, counting the page in view as read. */
@@ -30,6 +34,10 @@ export function progressPercent(page: number, pageCount: number): number {
 }
 
 export function safeFileName(title: string): string {
-  const base = title.replace(/[\\/:*?"<>|]+/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 120);
+  const base = title
+    .replace(/[\\/:*?"<>|]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, 120);
   return `${base || 'book'}.pdf`;
 }

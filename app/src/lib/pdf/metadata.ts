@@ -58,7 +58,11 @@ function makeCanvas(width: number, height: number): HTMLCanvasElement {
 
 function toBlob(canvas: HTMLCanvasElement, type: string, quality: number): Promise<Blob> {
   return new Promise((resolve, reject) => {
-    canvas.toBlob((blob) => (blob ? resolve(blob) : reject(new Error('toBlob failed'))), type, quality);
+    canvas.toBlob(
+      (blob) => (blob ? resolve(blob) : reject(new Error('toBlob failed'))),
+      type,
+      quality,
+    );
   });
 }
 

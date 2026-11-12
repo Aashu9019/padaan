@@ -79,7 +79,12 @@ export function BookActions({ book, onClose }: { book: Book | null; onClose: () 
             <Button variant="ghost" onClick={close}>
               Cancel
             </Button>
-            <Button variant="primary" type="submit" form="edit-book" disabled={!title.trim() || busy}>
+            <Button
+              variant="primary"
+              type="submit"
+              form="edit-book"
+              disabled={!title.trim() || busy}
+            >
               Save
             </Button>
           </>
@@ -180,7 +185,12 @@ export function BookActions({ book, onClose }: { book: Book | null; onClose: () 
             void exportBook(book);
           }}
         />
-        <MenuItem icon="trash" label="Remove from library" danger onClick={() => setMode('delete')} />
+        <MenuItem
+          icon="trash"
+          label="Remove from library"
+          danger
+          onClick={() => setMode('delete')}
+        />
       </div>
     </Dialog>
   );
