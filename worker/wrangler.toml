@@ -3,7 +3,7 @@ main = "src/index.ts"
 compatibility_date = "2026-10-01"
 
 [vars]
-APP_ORIGIN = "http://localhost:5173"
+APP_ORIGIN = "http://localhost:5173,http://localhost:4173"
 MAX_BYTES = "314572800"
 
 # PROXY_TOKEN is a secret: `pnpm --filter worker exec wrangler secret put PROXY_TOKEN`
