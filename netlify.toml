@@ -1,0 +1,45 @@
+# Netlify deploy for the Padaan PWA (the proxy worker deploys separately to Cloudflare).
+[build]
+  command = "pnpm --filter app build"
+  publish = "app/dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+  # Set VITE_DEFAULT_PROXY_URL in the Netlify UI once the worker is deployed.
+
+# Client-side routes (/add, /read/:id, /settings) all serve the app shell.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# The service worker and manifest must always be revalidated so updates reach users.
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "no-cache"
+    Service-Worker-Allowed = "/"
+
+[[headers]]
+  for = "/manifest.webmanifest"
+  [headers.values]
+    Cache-Control = "no-cache"
+    Content-Type = "application/manifest+json"
+
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "no-cache"
+
+# Hashed build assets never change.
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "no-referrer"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
