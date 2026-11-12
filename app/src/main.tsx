@@ -5,6 +5,7 @@ import { router } from './router';
 import { UpdatePrompt } from './components/UpdatePrompt';
 import { Toaster } from './components/Toaster';
 import { PasswordPrompt } from './components/PasswordPrompt';
+import { ThemeSync } from './hooks/useSettings';
 import './index.css';
 
 const root = document.getElementById('root');
@@ -16,5 +17,6 @@ createRoot(root).render(
     <UpdatePrompt />
     <Toaster />
     <PasswordPrompt />
+    <ThemeSync />
   </StrictMode>,
 );

@@ -41,7 +41,7 @@ def text_pdf(path, pages, title, author, seed=1, password=None, outline=True):
             top = 130
         else:
             top = 64
-        body = " ".join(sentence(rng) for _ in range(28))
+        body = " ".join(sentence(rng) for _ in range(14))
         page.insert_textbox(fitz.Rect(48, top, 384, 600), body, fontsize=11, fontname="tiro", align=3)
         page.insert_text((210, 625), str(i + 1), fontsize=9, fontname="tiro")
     if outline and toc:

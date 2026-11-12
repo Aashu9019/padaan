@@ -1,7 +1,5 @@
 import { test, expect } from '@playwright/test';
-import path from 'node:path';
-
-const fixture = (name: string) => path.join(import.meta.dirname, '..', 'tests', 'fixtures', name);
+import { fixture } from './helpers';
 
 test('imports PDFs, detects duplicates and rejects non-PDFs', async ({ page }) => {
   await page.goto('/add');

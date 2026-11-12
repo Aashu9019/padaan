@@ -99,12 +99,12 @@ export class IdbBlobStore implements BlobStore {
 
   async put(key: string, data: Blob | ReadableStream<Uint8Array>): Promise<void> {
     const blob = data instanceof Blob ? data : await new Response(data).blob();
-    await this.database.blobs.put({ key, blob });
+    await this.database.blobs.put({ key, data: await blob.arrayBuffer(), type: blob.type });
   }
 
   async get(key: string): Promise<Blob | null> {
     const row = await this.database.blobs.get(key);
-    return row?.blob ?? null;
+    return row ? new Blob([row.data], { type: row.type }) : null;
   }
 
   async delete(key: string): Promise<void> {

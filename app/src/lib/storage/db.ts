@@ -53,9 +53,14 @@ export interface Settings {
   proxyToken: string;
 }
 
+/**
+ * Fallback file storage. Bytes are kept as an ArrayBuffer rather than a Blob because some
+ * WebKit builds fail to persist Blobs in IndexedDB.
+ */
 export interface StoredBlob {
   key: string;
-  blob: Blob;
+  data: ArrayBuffer;
+  type: string;
 }
 
 export class PadaanDB extends Dexie {

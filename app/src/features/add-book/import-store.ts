@@ -57,7 +57,12 @@ export const useImports = create<ImportState>((set, get) => {
           });
           patch(job.id, { status: result.status, bookId: result.book.id });
         } catch (error) {
-          console.warn('Import failed', file.name, error);
+          console.warn(
+            'Import failed',
+            file.name,
+            error instanceof Error ? `${error.name}: ${error.message}` : error,
+            (error as Error)?.cause,
+          );
           patch(job.id, { status: 'error', message: importErrorMessage(error) });
         }
       }

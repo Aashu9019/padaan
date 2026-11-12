@@ -19,3 +19,13 @@ test('library screenshots', async ({ page }, info) => {
   await page.waitForTimeout(500);
   await page.screenshot({ path: `test-results/screens/${info.project.name}-library.png` });
 });
+
+test('reader screenshots', async ({ page }, info) => {
+  const { importBooks } = await import('./helpers');
+  await importBooks(page, ['small-text.pdf']);
+  await page.getByText('Added — open').click();
+  await page.getByRole('img', { name: 'Page 1' }).waitFor();
+  await page.keyboard.press('ArrowRight');
+  await page.waitForTimeout(800);
+  await page.screenshot({ path: `test-results/screens/${info.project.name}-reader.png` });
+});
