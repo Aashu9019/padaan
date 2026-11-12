@@ -32,10 +32,17 @@ test('reader screenshots', async ({ page }, info) => {
 
 test('settings and search screenshots', async ({ page }, info) => {
   await page.goto('/settings');
-  await page.screenshot({ path: `test-results/screens/${info.project.name}-settings.png`, fullPage: true });
+  await page.screenshot({
+    path: `test-results/screens/${info.project.name}-settings.png`,
+    fullPage: true,
+  });
   await page.goto('/add');
   await page.getByPlaceholder(/Title or author/).fill('jane austen');
-  await page.getByRole('region', { name: 'Open Library' }).getByRole('button').first().waitFor({ timeout: 30_000 });
+  await page
+    .getByRole('region', { name: 'Open Library' })
+    .getByRole('button')
+    .first()
+    .waitFor({ timeout: 30_000 });
   await page.waitForTimeout(1500);
   await page.screenshot({ path: `test-results/screens/${info.project.name}-search.png` });
 });

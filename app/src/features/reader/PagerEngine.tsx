@@ -12,7 +12,7 @@ const EDGE = 0.2;
  * Used when page-curl is off and as the reduced-motion engine.
  */
 export const PagerEngine = forwardRef<ReaderEngineHandle, ReaderEngineProps>(function PagerEngine(
-  { cache, spreads, double, page, pageWidth, pageHeight, onPageChange, onCenterTap },
+  { cache, spreads, double, page, pageWidth, pageHeight, onPageChange, onCenterTap, onFlipStart },
   ref,
 ) {
   const reduced = useReducedMotion();
@@ -24,7 +24,10 @@ export const PagerEngine = forwardRef<ReaderEngineHandle, ReaderEngineProps>(fun
 
   const goSpread = (target: number) => {
     const s = spreads[Math.max(0, Math.min(spreads.length - 1, target))];
-    if (s && s[0] !== undefined && s[0] !== spread[0]) onPageChange(s[0]);
+    if (s && s[0] !== undefined && s[0] !== spread[0]) {
+      onFlipStart?.();
+      onPageChange(s[0]);
+    }
   };
 
   useImperativeHandle(ref, () => ({

@@ -6,9 +6,11 @@ import { PageRenderCache } from '@/lib/pdf/render-cache';
 import { buildSpreads, renderWindow, spreadIndexOf } from '@/lib/reader/spreads';
 import type { Book } from '@/lib/storage/db';
 import type { PDFDocumentProxy } from '@/lib/pdf/pdfjs';
-import { useSettings } from '@/hooks/useSettings';
+import { useReducedMotion, useSettings } from '@/hooks/useSettings';
 import { computeLayout } from './layout';
+import { playPageTurn } from '@/lib/reader/page-sound';
 import { PagerEngine } from './PagerEngine';
+import { FlipEngine } from './FlipEngine';
 import { useProgressSaver } from './useProgress';
 import type { ReaderEngineHandle } from './engine';
 
@@ -45,6 +47,8 @@ export function Reader({
   initialPage: number;
 }) {
   const settings = useSettings();
+  const reducedMotion = useReducedMotion();
+  const Engine = reducedMotion ? PagerEngine : FlipEngine;
   const [stageRef, stage] = useElementSize<HTMLDivElement>();
   const [page, setPage] = useState(initialPage);
   const [chrome, setChrome] = useState(true);
@@ -149,7 +153,7 @@ export function Reader({
 
       <div ref={stageRef} className="relative min-h-0 flex-1">
         {layout.pageWidth > 0 && (
-          <PagerEngine
+          <Engine
             ref={engine}
             cache={cache}
             pageCount={pageCount}
@@ -161,6 +165,7 @@ export function Reader({
             flipMs={settings.flipMs}
             onPageChange={changePage}
             onCenterTap={() => setChrome((c) => !c)}
+            onFlipStart={settings.sound ? playPageTurn : undefined}
           />
         )}
       </div>

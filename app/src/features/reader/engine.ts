@@ -21,4 +21,6 @@ export interface ReaderEngineProps {
   flipMs: number;
   onPageChange(page: number): void;
   onCenterTap(): void;
+  /** A page has started turning (used for the page-turn sound). */
+  onFlipStart?(): void;
 }
