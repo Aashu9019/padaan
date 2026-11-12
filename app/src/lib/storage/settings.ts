@@ -9,7 +9,8 @@ export const DEFAULT_SETTINGS: Settings = {
   flipMs: 700,
   reducedMotion: 'system',
   maxDownloadMB: 300,
-  proxyUrl: import.meta.env.VITE_DEFAULT_PROXY_URL ?? '',
+  // On Netlify the proxy is an edge function on the same domain; override for Cloudflare.
+  proxyUrl: import.meta.env.VITE_DEFAULT_PROXY_URL ?? '/api',
   proxyToken: '',
 };
 

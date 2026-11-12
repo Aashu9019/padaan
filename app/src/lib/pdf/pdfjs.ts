@@ -64,6 +64,10 @@ export async function openPdf(blob: Blob, password?: string): Promise<OpenedPdf>
     disableAutoFetch: true,
     disableStream: true,
     enableXfa: false,
+    cMapUrl: '/pdfjs/cmaps/',
+    cMapPacked: true,
+    standardFontDataUrl: '/pdfjs/standard_fonts/',
+    wasmUrl: '/pdfjs/wasm/',
   };
   let task: PDFDocumentLoadingTask;
   if (blob.size <= RANGE_THRESHOLD) {

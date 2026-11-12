@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { fixture } from './helpers';
 
 test('imports PDFs, detects duplicates and rejects non-PDFs', async ({ page }) => {
-  await page.goto('/add');
+  await page.goto('/add?tab=import');
   const chooser = page.waitForEvent('filechooser');
   await page.getByRole('button', { name: /Choose PDF files/ }).click();
   await (
@@ -28,7 +28,7 @@ test('imports PDFs, detects duplicates and rejects non-PDFs', async ({ page }) =
 });
 
 test('unlocks a password-protected PDF', async ({ page }) => {
-  await page.goto('/add');
+  await page.goto('/add?tab=import');
   const chooser = page.waitForEvent('filechooser');
   await page.getByRole('button', { name: /Choose PDF files/ }).click();
   await (await chooser).setFiles([fixture('locked.pdf')]);

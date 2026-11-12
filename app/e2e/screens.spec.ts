@@ -9,7 +9,7 @@ test.skip(!process.env.SCREENS, 'set SCREENS=1');
 test('library screenshots', async ({ page }, info) => {
   await page.goto('/');
   await page.screenshot({ path: `test-results/screens/${info.project.name}-empty.png` });
-  await page.goto('/add');
+  await page.goto('/add?tab=import');
   const chooser = page.waitForEvent('filechooser');
   await page.getByRole('button', { name: /Choose PDF files/ }).click();
   await (await chooser).setFiles([fixture('small-text.pdf'), fixture('second-book.pdf')]);

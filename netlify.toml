@@ -2,10 +2,11 @@
 [build]
   command = "pnpm --filter app build"
   publish = "app/dist"
+  edge_functions = "netlify/edge-functions"
 
 [build.environment]
   NODE_VERSION = "22"
-  # Set VITE_DEFAULT_PROXY_URL in the Netlify UI once the worker is deployed.
+  # The download proxy runs as a Netlify edge function at /api (netlify/edge-functions).
 
 # Client-side routes (/add, /read/:id, /settings) all serve the app shell.
 [[redirects]]

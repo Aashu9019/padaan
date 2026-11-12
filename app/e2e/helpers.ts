@@ -6,7 +6,7 @@ export const fixture = (name: string) =>
 
 /** Imports files through the add page and waits until each is on the shelf. */
 export async function importBooks(page: Page, names: string[]) {
-  await page.goto('/add');
+  await page.goto('/add?tab=import');
   const chooser = page.waitForEvent('filechooser');
   await page.getByRole('button', { name: /Choose PDF files/ }).click();
   await (await chooser).setFiles(names.map(fixture));

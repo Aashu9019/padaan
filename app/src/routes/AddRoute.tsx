@@ -1,16 +1,24 @@
 import clsx from 'clsx';
-import { Icon } from '@/components/Icon';
+import { useSearchParams } from 'react-router-dom';
+import { Icon, type IconName } from '@/components/Icon';
 import { ImportJobs } from '@/features/add-book/ImportJobs';
+import { LinkPanel } from '@/features/add-book/LinkPanel';
+import { SearchPanel } from '@/features/add-book/SearchPanel';
 import { usePdfPicker, useWindowPdfDrop } from '@/features/add-book/useFileImport';
+
+type Tab = 'search' | 'link' | 'import';
+
+const TABS: Array<{ id: Tab; label: string; icon: IconName }> = [
+  { id: 'search', label: 'Search', icon: 'search' },
+  { id: 'link', label: 'Paste link', icon: 'link' },
+  { id: 'import', label: 'From device', icon: 'upload' },
+];
 
 function ImportPanel() {
   const pick = usePdfPicker();
   const dragging = useWindowPdfDrop();
   return (
-    <section aria-labelledby="import-heading" className="space-y-4">
-      <h2 id="import-heading" className="sr-only">
-        Import from this device
-      </h2>
+    <section aria-label="Import from this device" className="space-y-4">
       <button
         onClick={pick}
         className={clsx(
@@ -34,11 +42,46 @@ function ImportPanel() {
 }
 
 export default function AddRoute() {
+  const [params, setParams] = useSearchParams();
+  const requested = params.get('tab');
+  const tab: Tab = params.get('shared')
+    ? 'import'
+    : TABS.some((t) => t.id === requested)
+      ? (requested as Tab)
+      : 'search';
+
   return (
     <div className="mx-auto max-w-2xl py-8">
       <h1 className="font-serif text-3xl tracking-tight">Add a book</h1>
-      <div className="mt-6">
-        <ImportPanel />
+
+      <div
+        role="tablist"
+        aria-label="How to add"
+        className="mt-6 grid grid-cols-3 gap-1 rounded-xl bg-paper-2/70 p-1"
+      >
+        {TABS.map((t) => (
+          <button
+            key={t.id}
+            role="tab"
+            id={`tab-${t.id}`}
+            aria-selected={tab === t.id}
+            aria-controls={`panel-${t.id}`}
+            onClick={() => setParams({ tab: t.id }, { replace: true })}
+            className={clsx(
+              'flex h-10 items-center justify-center gap-2 rounded-lg text-sm font-medium transition-colors',
+              tab === t.id ? 'bg-paper text-ink shadow-sm' : 'text-ink-2 hover:text-ink',
+            )}
+          >
+            <Icon name={t.icon} size={16} className="hidden min-[380px]:block" />
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      <div role="tabpanel" id={`panel-${tab}`} aria-labelledby={`tab-${tab}`} className="mt-6">
+        {tab === 'search' && <SearchPanel />}
+        {tab === 'link' && <LinkPanel />}
+        {tab === 'import' && <ImportPanel />}
       </div>
     </div>
   );

@@ -5,6 +5,12 @@ export interface Env {
   /** Comma-separated list of origins allowed to call the proxy. */
   APP_ORIGIN: string;
   MAX_BYTES?: string;
+  /**
+   * "true" lets same-origin browser requests through without a token. Used when the proxy is
+   * served from the app's own domain (Netlify edge function). Browsers set Sec-Fetch-Site and
+   * pages can't forge it, so other websites can't use the proxy.
+   */
+  SAME_ORIGIN_ONLY?: string;
 }
 
 const MAX_REDIRECTS = 5;
@@ -90,7 +96,10 @@ function limitStream(body: ReadableStream<Uint8Array>, maxBytes: number) {
 async function handleFetch(request: Request, env: Env, origin: string | null): Promise<Response> {
   const auth = request.headers.get('Authorization') ?? '';
   const token = auth.startsWith('Bearer ') ? auth.slice(7) : '';
-  if (!env.PROXY_TOKEN || !safeEqual(token, env.PROXY_TOKEN)) {
+  const sameOrigin =
+    env.SAME_ORIGIN_ONLY === 'true' && request.headers.get('Sec-Fetch-Site') === 'same-origin';
+  const tokenOk = Boolean(env.PROXY_TOKEN) && safeEqual(token, env.PROXY_TOKEN);
+  if (!sameOrigin && !tokenOk) {
     return error(401, 'Invalid or missing token', origin);
   }
 
@@ -140,13 +149,18 @@ export default {
       return new Response(null, { status: origin ? 204 : 403, headers: corsHeaders(origin) });
     }
     if (request.method !== 'GET') return error(405, 'Method not allowed', origin);
-    if (pathname === '/health') {
+    // Served at the root on Cloudflare and under /api on Netlify.
+    const route = pathname.replace(/^\/api(?=\/)/, '');
+    if (route === '/health') {
       const headers = corsHeaders(origin);
       headers.set('Content-Type', 'application/json');
       return new Response(JSON.stringify({ ok: true }), { headers });
     }
-    if (pathname === '/fetch') {
-      if (!origin && request.headers.get('Origin')) return error(403, 'Origin not allowed', null);
+    if (route === '/fetch') {
+      const sameSite = request.headers.get('Sec-Fetch-Site') === 'same-origin';
+      if (!origin && !sameSite && request.headers.get('Origin')) {
+        return error(403, 'Origin not allowed', null);
+      }
       return handleFetch(request, env, origin);
     }
     return error(404, 'Not found', origin);
