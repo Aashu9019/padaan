@@ -1,4 +1,4 @@
-# CLAUDE.md — Folio (personal PDF book reader PWA)
+# CLAUDE.md — Padaan (personal PDF book reader PWA)
 
 Read this first, then `docs/PRD.md`, `docs/TECH_SPEC.md`, and `docs/IMPLEMENTATION_PLAN.md`.
 

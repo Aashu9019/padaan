@@ -12,5 +12,7 @@
     "typecheck": "pnpm -r typecheck",
     "format": "prettier --write ."
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "prettier": "^3.10.1"
+  }
 }

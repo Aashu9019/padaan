@@ -1,4 +1,4 @@
-# Technical Spec — Folio
+# Technical Spec — Padaan
 
 ## 1. Architecture
 
@@ -165,7 +165,7 @@ interface SourceClient { search(q: string, page: number, signal: AbortSignal): P
 
 ## 9. PWA config
 - `vite-plugin-pwa` with `registerType: 'prompt'` (show "Update available" toast).
-- Manifest: name "Folio", standalone display, portrait-any orientation, theme color, maskable icons 192/512.
+- Manifest: name "Padaan", standalone display, portrait-any orientation, theme color, maskable icons 192/512.
 - `share_target` (Android): POST multipart with `files` accepting `application/pdf` → handled in SW, stashed in IDB, app opens `/add?shared=1` to finish import.
 - Precache app shell + pdf.js worker. Runtime cache: covers from search APIs (CacheFirst, 7 days, max 200). Never cache proxy responses in SW (they go to BlobStore).
 - iOS: add `apple-touch-icon`, `apple-mobile-web-app-capable` meta; show an "Install to home screen" hint on iOS Safari when not standalone.

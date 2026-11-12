@@ -1,4 +1,4 @@
-# Implementation Plan — Folio
+# Implementation Plan — Padaan
 
 Work one phase at a time. At the end of each phase: run tests, run `pnpm build && pnpm preview`, check acceptance criteria, commit with message `phase N: <summary>`.
 

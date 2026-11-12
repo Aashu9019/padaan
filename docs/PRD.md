@@ -1,4 +1,4 @@
-# PRD — Folio: Personal Book Reader PWA
+# PRD — Padaan: Personal Book Reader PWA
 
 **Owner:** Avyanta (single user, personal use)
 **Platform:** Progressive Web App — installable on Android, iOS, desktop
