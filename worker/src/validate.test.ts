@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { validateTargetUrl } from './validate';
+import { validateTargetUrl } from './validate.ts';
 
 describe('validateTargetUrl', () => {
   it.each([

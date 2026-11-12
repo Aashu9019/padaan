@@ -1,4 +1,4 @@
-import { BadUrlError, validateTargetUrl } from './validate';
+import { BadUrlError, validateTargetUrl } from './validate.ts';
 
 export interface Env {
   PROXY_TOKEN: string;
