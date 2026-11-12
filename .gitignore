@@ -1,0 +1,39 @@
+# dependencies
+node_modules/
+.pnpm-store/
+
+# build output
+dist/
+dev-dist/
+*.tsbuildinfo
+.vite/
+
+# worker
+.wrangler/
+.dev.vars
+
+# env
+.env
+.env.*
+!.env.example
+
+# tests
+coverage/
+test-results/
+playwright-report/
+playwright/.cache/
+app/tests/fixtures/large-*.pdf
+
+# editor / os
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+*.log
+
+# claude / agent tooling
+.claude/
+CLAUDE.local.md
+.planning/
+graphify-out/
