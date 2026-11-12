@@ -17,21 +17,96 @@ interface FlipInternals {
   stopMove(): void;
 }
 
+interface Point {
+  x: number;
+  y: number;
+}
+
+interface AppInternals {
+  mousePosition: Point;
+  isUserTouch: boolean;
+  isUserMove: boolean;
+  userMove(pos: Point, isTouch: boolean): void;
+  userStop(pos: Point, isSwipe?: boolean): void;
+  getCurrentPageIndex(): number;
+  getRender(): { getRect(): { left: number; width: number; pageWidth: number } };
+}
+
+/** StPageFlip's FlipDirection enum (const enum, so plain numbers at runtime). */
+const FORWARD = 0;
+const BACK = 1;
+
 /**
- * StPageFlip finishes a dragged turn only once the corner crosses the spine. In single-page
- * mode the spine is the screen's left edge, so a natural drag to the middle springs back.
- * Patch its release rule: past the middle of the page, complete the turn.
- * (Relies on StPageFlip 2.0.7 internals; the bundle keeps these names unminified.)
+ * Single-page mode fixes for StPageFlip 2.0.7 (relies on internals; the bundle keeps these
+ * names unminified, and each patch bails out if they're missing).
+ *
+ * 1. Direction: StPageFlip picks the turn direction from where the finger lands — only the
+ *    leftmost 20% of the page turns back — so a natural swipe right from the middle folded the
+ *    *next* page and sprang back. Pick it from which way the finger first moves instead, and
+ *    make a backward drag pull the previous page in from the left, its edge following the
+ *    finger.
+ * 2. Release: StPageFlip completes a dragged turn only once the corner crosses the spine (the
+ *    screen's left edge here), so a drag to the middle sprang back. Past the middle of the
+ *    page, or on a quick swipe, complete the turn.
  */
-function relaxPortraitRelease(instance: PageFlip) {
+function patchPortraitGestures(instance: PageFlip) {
+  const app = instance as unknown as AppInternals;
   const flip = (instance as unknown as { getFlipController(): FlipInternals }).getFlipController();
-  if (typeof flip?.animateFlippingTo !== 'function') return;
+  const ctl = flip as unknown as FlipInternals & {
+    getDirectionByPoint?: (p: Point) => number;
+  };
+  if (
+    typeof flip?.animateFlippingTo !== 'function' ||
+    typeof ctl.getDirectionByPoint !== 'function' ||
+    typeof app.userMove !== 'function' ||
+    typeof app.userStop !== 'function'
+  ) {
+    return;
+  }
+
+  /** Direction of the drag in progress, decided by its first movement. */
+  let direction: number | null = null;
+  let startX = 0;
+  let swiped = false;
+
+  const byPoint = ctl.getDirectionByPoint.bind(ctl);
+  ctl.getDirectionByPoint = (p) => direction ?? byPoint(p);
+
+  const move = app.userMove.bind(app);
+  app.userMove = (pos, isTouch) => {
+    if (!app.isUserTouch) return move(pos, isTouch);
+    if (direction === null) {
+      const dx = pos.x - app.mousePosition.x;
+      if (Math.abs(dx) <= 5) return;
+      direction = dx > 0 && app.getCurrentPageIndex() > 0 ? BACK : FORWARD;
+      startX = app.mousePosition.x;
+    }
+    if (direction === BACK) {
+      // Back-turn coordinates are measured leftwards from the spine. Map "finger moved d px
+      // right" to "page edge d px into the screen" so the page tracks the finger.
+      const rect = app.getRender().getRect();
+      const local = rect.pageWidth - 2 * Math.max(0, pos.x - startX);
+      pos = { x: rect.left + rect.width / 2 - local, y: pos.y };
+    }
+    move(pos, isTouch);
+  };
+
+  const stop = app.userStop.bind(app);
+  app.userStop = (pos, isSwipe = false) => {
+    // StPageFlip answers a swipe with flipNext/flipPrev, which a click-disabled book ignores
+    // mid-drag. Let the release rule below finish the turn instead.
+    swiped = isSwipe && app.isUserMove;
+    stop(pos, isSwipe && !app.isUserMove);
+    direction = null;
+    swiped = false;
+  };
+
   flip.stopMove = function stopMove(this: FlipInternals) {
     if (this.calc === null) return;
     const pos = this.calc.getPosition();
     const rect = this.getBoundsRect();
     const y = this.calc.getCorner() === 'bottom' ? rect.height : 0;
-    if (pos.x <= rect.pageWidth * 0.5) {
+    if (swiped || pos.x <= rect.pageWidth * 0.5) {
       this.animateFlippingTo(pos, { x: -rect.pageWidth, y }, true);
     } else {
       this.animateFlippingTo(pos, { x: rect.pageWidth, y }, false);
@@ -144,7 +219,7 @@ export const FlipEngine = forwardRef<ReaderEngineHandle, ReaderEngineProps>(func
       autoSize: false,
     });
     instance.loadFromHTML(shells);
-    if (!double) relaxPortraitRelease(instance);
+    if (!double) patchPortraitGestures(instance);
     instance.on('flip', (e) => {
       const global = start + e.data;
       current.current = global;

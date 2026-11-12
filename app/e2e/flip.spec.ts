@@ -1,6 +1,20 @@
 import { test, expect, type Page } from '@playwright/test';
 import { importBooks } from './helpers';
 
+/** Horizontal drag across the page middle; `steps` sets the speed (few steps = quick swipe). */
+async function swipe(page: Page, from: number, to: number, steps: number) {
+  const box = (await page.locator('.stf__parent').boundingBox())!;
+  const y = box.y + box.height * 0.55;
+  await page.mouse.move(box.x + box.width * from, y);
+  await page.mouse.down();
+  for (let i = 1; i <= steps; i++) {
+    await page.mouse.move(box.x + box.width * (from + ((to - from) * i) / steps), y);
+    await page.waitForTimeout(16);
+  }
+  await page.mouse.up();
+  await page.waitForTimeout(1200); // let the turn finish
+}
+
 async function dragCorner(page: Page, shot?: string) {
   const box = (await page.locator('.stf__parent').boundingBox())!;
   const sx = box.x + box.width - 8;
@@ -52,5 +66,20 @@ test.describe('page-curl on a phone-sized screen', () => {
     await page.waitForTimeout(800);
     await dragCorner(page, `test-results/screens/${info.project.name}-curl-phone.png`);
     await expect(status).toHaveText('Page 2 of 20');
+    await page.waitForTimeout(1200);
+
+    // Slow drag from the middle to the right turns back.
+    await swipe(page, 0.4, 0.95, 24);
+    await expect(status).toHaveText('Page 1 of 20');
+
+    // Quick short swipes turn both ways.
+    await swipe(page, 0.7, 0.4, 4);
+    await expect(status).toHaveText('Page 2 of 20');
+    await swipe(page, 0.4, 0.7, 4);
+    await expect(status).toHaveText('Page 1 of 20');
+
+    // A short slow drag that stops early springs back.
+    await swipe(page, 0.9, 0.75, 20);
+    await expect(status).toHaveText('Page 1 of 20');
   });
 });
